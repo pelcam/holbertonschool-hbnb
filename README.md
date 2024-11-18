@@ -1,1 +1,1 @@
-#HBnB project made by Achraf Jedi and Camille Pelletier for Holberton School
+#HBnB project made by Camille Pelletier for Holberton School
