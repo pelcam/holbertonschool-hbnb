@@ -1,16 +1,29 @@
 from .base import BaseModel
+from app import db
+
+place_amenities = db.Table(
+    'place_amenities',
+    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
+)
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner):
-        super().__init__()
-        self.title = title
-        self.description = description
-        self.price = price
-        self.latitude = latitude
-        self.longitude = longitude
-        self.owner = owner
-        self.reviews = []  # List to store related reviews
-        self.amenities = []  # List to store related amenities
+    __tablename__ = "places"
+
+    _title = db.Column("title", db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    _price = db.Column("price", db.Float, nullable=False)
+    _latitude = db.Column("latitude", db.Float, nullable=False)
+    _longitude = db.Column("longitude", db.Float, nullable=False)
+    _owner_id = db.Column("owner", db.String(36), db.ForeignKey("users.id"), nullable=False)
+
+    owner = db.relationship("User", back_populates="places")
+    reviews = db.relationship("Review", back_populates="place", lazy="dynamic")
+    amenities = db.relationship("Amenity", secondary=place_amenities, back_populates="places", lazy="dynamic")
+
+    @property
+    def owner_id(self):
+        return self._owner_id
 
     @property
     def title(self):
@@ -51,11 +64,3 @@ class Place(BaseModel):
         if not (-180.0 <= value <= 180.0):
             raise ValueError("Longitude must be between -180 and 180")
         self._longitude = value
-
-    def add_review(self, review):
-        """Add a review to the place."""
-        self.reviews.append(review)
-
-    def add_amenity(self, amenity):
-        """Add an amenity to the place."""
-        self.amenities.append(amenity)

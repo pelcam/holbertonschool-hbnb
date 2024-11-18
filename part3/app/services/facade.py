@@ -1,23 +1,17 @@
-from app.persistence.repository import InMemoryRepository
+from app.persistence.user import UserRepository
+from app.persistence.amenities import AmenitiesRepository
+from app.persistence.places import PlacesRepository
+from app.persistence.reviews import ReviewsRepository
 from app.models import *
 
 
 class HBnBFacade:
-    INSTANCE = None
-
-    @classmethod
-    def get_instance(cls):
-        if cls.INSTANCE is None:
-            cls.INSTANCE = HBnBFacade()
-        return cls.INSTANCE
-
     def __init__(self):
-        self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
+        self.user_repo = UserRepository()
+        self.place_repo = PlacesRepository()
+        self.review_repo = ReviewsRepository()
+        self.amenity_repo = AmenitiesRepository()
 
-    # User facade
     def create_user(self, user_data):
         user = User(**user_data)
         self.user_repo.add(user)
@@ -27,7 +21,7 @@ class HBnBFacade:
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
 
     def update_user(self, user_id, user_data):
         return self.user_repo.update(user_id, user_data)
@@ -49,8 +43,19 @@ class HBnBFacade:
     def update_amenity(self, amenity_id, amenity_data):
         return self.amenity_repo.update(amenity_id, amenity_data)
 
+    def delete_amenity(self, amenity_id):
+        return self.amenity_repo.delete(amenity_id)
+
     def create_place(self, place_data):
-        place = Place(**place_data)
+        place = Place(
+            title=place_data["title"],
+            description=place_data["description"],
+            price=place_data["price"],
+            latitude=place_data["latitude"],
+            longitude=place_data["longitude"],
+            _owner_id=place_data["owner"]
+        )
+
         self.place_repo.add(place)
         return place
 

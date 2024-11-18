@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import HBnBFacade
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app import facade
 
 api = Namespace('reviews', description='Review operations')
 
@@ -11,10 +12,9 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
-facade = HBnBFacade.get_instance()
-
 @api.route('/')
 class ReviewList(Resource):
+    @jwt_required()
     @api.expect(review_model)
     @api.response(201, 'Review successfully created')
     @api.response(400, 'Invalid input data')
@@ -23,21 +23,21 @@ class ReviewList(Resource):
         review_data = api.payload
         user_id = review_data.get("user_id", None)
         place_id = review_data.get("place_id", None)
-
-        owner = facade.get_user(user_id)
-        if not owner:
-            return {"error": "Invalid input data"}, 400
+        current_user = get_jwt_identity()
 
         place = facade.get_place(place_id)
         if not place:
-            return {"error": "Invalid input data"}, 400
+            return {"error": "Invalid place id"}, 404
+
+        if current_user["id"] != user_id:
+            return {"error": "Unauthorized action"}, 403
 
         try:
             new_review = facade.create_review(review_data)
         except Exception as e:
             return {"error": "Invalid input data"}, 400
 
-        place.add_review(new_review)
+        place.reviews.append(new_review)
         return {"id": new_review.id, "text": new_review.text, "rating": new_review.rating, "place_id": new_review.place_id, "user_id": new_review.user_id}, 201
 
     @api.response(200, 'List of reviews retrieved successfully')
@@ -56,15 +56,22 @@ class ReviewResource(Resource):
             return {"error": "Review not found"}, 404
         return { "id": obj.id, "text": obj.text, "rating": obj.rating }
 
+    @jwt_required()
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
     def put(self, review_id):
         """Update a review's information"""
+        current_user = get_jwt_identity()
+
         obj = facade.get_review(review_id)
         if not obj:
             return {"error": "Review not found"}, 404
+
+        if not current_user["is_admin"]:
+            if current_user["id"] != obj.user_id:
+                return {"error": "Unauthorized action"}, 403
 
         try:
             facade.update_review(review_id, api.payload)
@@ -73,21 +80,25 @@ class ReviewResource(Resource):
 
         return {"message": "Review updated successfully"}, 200
 
+    @jwt_required()
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review"""
-        review = facade.get_review(review_id)
-        if not review:
+        current_user = get_jwt_identity()
+
+        obj = facade.get_review(review_id)
+        if not obj:
             return {"error": "Review not found"}, 404
 
-        facade.delete_review(review_id)
+        if not current_user["is_admin"]:
+            if current_user["id"] != obj.user_id:
+                return {"error": "Unauthorized action"}, 403
 
-        reviews = facade.get_place(review.place_id).reviews
-        reviews.pop(reviews.index(review))
+        facade.delete_review(review_id)
         return {"message": "Review deleted successfully"}, 200
 
-@api.route('/places/<place_id>/reviews')
+@api.route('/places/<place_id>')
 class PlaceReviewList(Resource):
     @api.response(200, 'List of reviews for the place retrieved successfully')
     @api.response(404, 'Place not found')

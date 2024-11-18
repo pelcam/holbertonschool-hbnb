@@ -1,7 +1,6 @@
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import create_access_token
-from app.services.facade import HBnBFacade
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from app import facade
 
 api = Namespace('auth', description='Authentication operations')
 
@@ -16,11 +15,9 @@ class Login(Resource):
     @api.expect(login_model)
     def post(self):
         """Authenticate user and return a JWT token"""
-        credentials = api.payload # Get the email and password from the request payload
-        
-        # Step 1: Retrieve the user based on the provided email
-        facade = HBnBFacade.get_instance()
+        credentials = api.payload  # Get the email and password from the request payload
 
+        # Step 1: Retrieve the user based on the provided email
         user = facade.get_user_by_email(credentials['email'])
 
         # Step 2: Check if the user exists and the password is correct
