@@ -1,27 +1,32 @@
 from flask import Flask
 from flask_restx import Api
-from app.api.v1.users import api as users_ns
-from app.api.v1.amenities import api as amenities_ns
-from app.api.v1.reviews import api as reviews_ns
-from app.api.v1.places import api as place_ns
-from app.api.v1.auth import api as auth_ns
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
+import config
 
-jwt = JWTManager()
 bcrypt = Bcrypt()
+jwt = JWTManager()
+db = SQLAlchemy()
+facade = None
 
-def create_app(config_class="config.DevelopmentConfig"):
+def create_app(config_class=config.DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
-    bcrypt.init_app(app)
-    jwt.init_app(app)
 
-    # Register the users namespace
-    api.add_namespace(users_ns, path='/api/v1/users')
-    api.add_namespace(amenities_ns, path="/api/v1/amenities")
-    api.add_namespace(reviews_ns, path="/api/v1/reviews")
-    api.add_namespace(place_ns, "/api/v1/places")
-    api.add_namespace(auth_ns, "/api/v1/auth")
+    bcrypt.init_app(app)
+    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
+    jwt.init_app(app)
+    db.init_app(app)
+
+    from .services import HBnBFacade
+    globals()["facade"] = HBnBFacade()
+
+    import app.api.v1 as modules
+    api.add_namespace(modules.admin_api, "/api/v1/admin")
+    api.add_namespace(modules.users_api, path='/api/v1/users')
+    api.add_namespace(modules.amenities_api, path="/api/v1/amenities")
+    api.add_namespace(modules.reviews_api, path="/api/v1/reviews")
+    api.add_namespace(modules.places_api, "/api/v1/places")
+    api.add_namespace(modules.auth_api, "/api/v1/auth")
     return app
