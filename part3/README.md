@@ -3,9 +3,9 @@
 ## Structure of project
 ```
 hbnb/
- |-app
- | |-api
- | | |-v1
+ |-app/
+ | |-api/
+ | | |-v1/
  | | | |-reviews.py
  | | | |-__init__.py
  | | | |-auth.py
@@ -14,7 +14,7 @@ hbnb/
  | | | |-users.py
  | | | |-places.py
  | | |-__init__.py
- | |-models
+ | |-models/
  | | |-place.py
  | | |-review.py
  | | |-base.py
@@ -28,7 +28,7 @@ hbnb/
  | | |-reviews.py
  | | |-repository.py
  | | |-__init__.py
- | |-services
+ | |-services/
  | | |-__init__.py
  | | |-facade.py
  | |-__init__.py
@@ -39,16 +39,15 @@ hbnb/
 ```
 
 **Explanation:**
-- The `app/` directory contains the core application code.
-- The `api/` subdirectory houses the API endpoints, organized by version (`v1/`).
-- The `models/` subdirectory contains the business logic classes (e.g., `user.py`, `place.py`).
-- The `services/` subdirectory is where the Facade pattern is implemented, managing the interaction between layers.
-- The `persistence/` subdirectory is where the in-memory repository is implemented. This will later be replaced by a database-backed solution using SQL Alchemy.
-- The `tests` directory is used to test api models and endpoints via unittest.
-- `run.py` is the entry point for running the Flask application.
-- `config.py` will be used for configuring environment variables and application settings.
-- `requirements.txt` will list all the Python packages needed for the project.
-- `README.md` will contain a brief overview of the project.
+- The `app/` folder serves as the core of the application, housing its main components.
+- Within `api/`, you’ll find the API routes categorized by version (`v1/`) for better organization.
+- The `models/` directory defines the core business logic and entities like `user.py` and `place.py`.
+- The `persistence/` folder currently implements in-memory storage, which will later transition to a database-backed system with - SQLAlchemy.
+- The `services/` directory contains a Facade layer that orchestrates interactions between different components.
+- The `config.py` file handles application settings and environment configurations.
+- The `README.md` provides an overview of the project, offering context for developers.
+- The `requirements.txt` lists all required Python packages for the project to function.
+- The `run.py` script is the main entry point to start the Flask application.
 
 
 ### Command
@@ -63,7 +62,7 @@ hbnb/
     mysql -hlocalhost -u <user> -p <create_database.sql || test_database.sql>
 ```
 
-### Database diagram
+### Diagrams
 ```mermaid
 erDiagram
     USER {
