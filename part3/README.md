@@ -4,14 +4,6 @@
 ```
 hbnb/
  |-app
- | |-persistence
- | | |-places.py
- | | |-amenities.py
- | | |-user.py
- | | |-reviews.py
- | | |-repository.py
- | | |-__init__.py
- | |-__init__.py
  | |-api
  | | |-v1
  | | | |-reviews.py
@@ -29,25 +21,20 @@ hbnb/
  | | |-user.py
  | | |-amenity.py
  | | |-__init__.py
+ | |-persistence
+ | | |-places.py
+ | | |-amenities.py
+ | | |-user.py
+ | | |-reviews.py
+ | | |-repository.py
+ | | |-__init__.py
  | |-services
  | | |-__init__.py
  | | |-facade.py
- |-diagram.md
- |-instance
- | |-development.db
- |-tests
- | |-test_02_places.py
- | |-test_05_admin.py
- | |-test_04_amenities.py
- | |-conftest.py
- | |-utils.py
- | |-test_database.sql
- | |-test_01_users.py
- | |-test_03_reviews.py
- | |-create_database.sql
+ | |-__init__.py
+ |-config.py
  |-README.md
  |-requirements.txt
- |-config.py
  |-run.py
 ```
 
