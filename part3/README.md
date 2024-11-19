@@ -2,32 +2,32 @@
 
 ## Structure of project
 ```
-hbnb/
+hbnb3/
  |-app/
  | |-api/
  | | |-v1/
- | | | |-reviews.py
  | | | |-__init__.py
- | | | |-auth.py
- | | | |-amenities.py
  | | | |-admin.py
- | | | |-users.py
+ | | | |-amenities.py
+ | | | |-auth.py
  | | | |-places.py
+ | | | |-reviews.py
+ | | | |-users.py
  | | |-__init__.py
  | |-models/
+ | | |-__init__.py
+ | | |-amenities.py
+ | | |-base.py
  | | |-place.py
  | | |-review.py
- | | |-base.py
  | | |-user.py
- | | |-amenity.py
+ | |-persistence/
  | | |-__init__.py
- | |-persistence
- | | |-places.py
  | | |-amenities.py
- | | |-user.py
- | | |-reviews.py
+ | | |-places.py
  | | |-repository.py
- | | |-__init__.py
+ | | |-reviews.py
+ | | |-user.py
  | |-services/
  | | |-__init__.py
  | | |-facade.py
