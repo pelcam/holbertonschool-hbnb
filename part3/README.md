@@ -1,6 +1,6 @@
 # HBNB Project
 
-## Structure of project
+## Project's structure
 ```
 hbnb3/
  |-app/
@@ -38,7 +38,7 @@ hbnb3/
  |-run.py
 ```
 
-**Explanation:**
+**Content**
 - The `app/` folder serves as the core of the application, housing its main components.
 - Within `api/`, you’ll find the API routes categorized by version (`v1/`) for better organization.
 - The `models/` directory defines the core business logic and entities like `user.py` and `place.py`.
